@@ -1,307 +1,284 @@
-# Citizen AI Setup Guide
+# Citizen AI - Intelligent Citizen Engagement Platform
 
-Complete installation and setup guide for the Citizen AI - Intelligent Citizen Engagement Platform.
+A generative AI web application that enables intelligent citizen-government interactions using IBM Granite AI model for real-time chat assistance, sentiment analysis, and concern management.
 
-## Prerequisites
+## Features
 
-- Python 3.9 or higher
-- 4GB+ RAM (for AI model)
-- Git (for cloning repository)
-- Internet connection (for downloading models)
+### 🤖 Real-Time Chat Assistant
+- Powered by IBM Granite 3.3 2B Instruct model
+- 24/7 availability for government service inquiries
+- Natural language processing for citizen queries
+- Contextual responses about ration cards, pension schemes, licenses, permits, and more
 
-## Installation Options
+### 📊 Sentiment Analysis
+- Real-time sentiment classification (Positive, Negative, Neutral)
+- Feedback analysis using advanced NLP
+- Helps government understand citizen satisfaction
 
-### Option 1: Quick Demo (Recommended for Testing)
+### 📋 Concern Management
+- Citizens can report issues and concerns
+- Categorized tracking system
+- Priority-based issue management
+- Automatic sentiment analysis of reported concerns
 
-Run the simplified demo version without GPU dependencies:
+### 📈 Admin Dashboard
+- Real-time analytics and statistics
+- Sentiment distribution visualization
+- Concern category analysis
+- Interactive charts and graphs
+- Recent activity monitoring
 
-```bash
-# 1. Install basic dependencies
-pip install fastapi uvicorn jinja2 python-multipart
+## Tech Stack
 
-# 2. Run the demo
-python demo_app.py
+### Backend
+- **FastAPI** - Modern Python web framework
+- **Python 3.11+** - Core programming language
+- **Uvicorn** - ASGI server for production
+
+### AI/ML
+- **IBM Granite 3.3 2B Instruct** - Core AI model from Hugging Face
+- **Transformers** - Hugging Face transformers library
+- **PyTorch** - Deep learning framework
+- **Accelerate** - Model optimization
+- **BitsAndBytes** - Model quantization
+
+### Frontend
+- **HTML5/CSS3** - Structure and styling
+- **Bootstrap 5** - Responsive UI framework
+- **JavaScript (ES6+)** - Interactive functionality
+- **Chart.js** - Data visualization
+- **Font Awesome** - Icons
+
+### Templates
+- **Jinja2** - Server-side templating
+- **Responsive Design** - Mobile-first approach
+
+## Project Structure
+
+```
+├── app/
+│   ├── main.py                 # FastAPI application entry point
+│   ├── ai_model.py            # IBM Granite model integration
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── auth.py            # Authentication routes
+│   │   ├── chat.py            # Chat assistant endpoints
+│   │   ├── feedback.py        # Feedback and sentiment analysis
+│   │   ├── concern.py         # Concern reporting system
+│   │   └── dashboard.py       # Admin dashboard analytics
+│   ├── templates/
+│   │   ├── base.html          # Base template
+│   │   ├── index.html         # Home page
+│   │   ├── chat.html          # Chat interface
+│   │   ├── feedback.html      # Feedback form
+│   │   ├── concern.html       # Concern reporting
+│   │   ├── login.html         # Admin login
+│   │   └── dashboard.html     # Admin dashboard
+│   └── static/
+│       ├── css/
+│       │   └── style.css      # Custom styles
+│       └── js/
+│           └── main.js        # JavaScript utilities
+├── README.md
+└── pyproject.toml             # Python dependencies
 ```
 
-Access at: http://localhost:8000
+## Installation & Setup
 
-### Option 2: Full IBM Granite Model Version
+### Prerequisites
+- Python 3.11 or higher
+- 4GB+ RAM (for AI model)
+- Internet connection (for model download)
 
-For production deployment with the actual IBM Granite AI model:
-
-#### Step 1: Create Virtual Environment
+### 1. Clone/Setup Project
 ```bash
 # Create project directory
 mkdir citizen-ai
 cd citizen-ai
-
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
 ```
 
-#### Step 2: Install Dependencies
+### 2. Install Dependencies
 ```bash
-# Install core dependencies
-pip install fastapi==0.104.1
-pip install uvicorn[standard]==0.24.0
-pip install jinja2==3.1.2
-pip install python-multipart==0.0.6
-
-# Install AI dependencies (requires significant disk space)
-pip install transformers==4.36.0
-pip install torch==2.1.0
-pip install accelerate==0.25.0
-pip install bitsandbytes==0.41.3
-pip install safetensors==0.4.1
-pip install tokenizers==0.15.0
-pip install huggingface-hub==0.19.4
+# Install required Python packages
+pip install fastapi uvicorn jinja2 python-multipart
+pip install transformers torch accelerate bitsandbytes
+pip install safetensors tokenizers huggingface-hub
 ```
 
-#### Step 3: Create Project Structure
+### 3. Create Project Structure
 ```bash
 # Create directories
 mkdir -p app/routes app/templates app/static/css app/static/js
 ```
 
-#### Step 4: Add Project Files
-Copy all the provided files to their respective directories:
+### 4. Add All Project Files
+Copy all the provided Python files, HTML templates, CSS, and JavaScript files to their respective directories.
 
-**Backend Files:**
-- `app/main.py`
-- `app/ai_model.py`
-- `app/routes/__init__.py`
-- `app/routes/auth.py`
-- `app/routes/chat.py`
-- `app/routes/feedback.py`
-- `app/routes/concern.py`
-- `app/routes/dashboard.py`
+## Running the Application
 
-**Frontend Files:**
-- `app/templates/base.html`
-- `app/templates/index.html`
-- `app/templates/chat.html`
-- `app/templates/feedback.html`
-- `app/templates/concern.html`
-- `app/templates/login.html`
-- `app/templates/dashboard.html`
-- `app/static/css/style.css`
-- `app/static/js/main.js`
-
-#### Step 5: Run the Application
+### Development Mode
 ```bash
-# Development mode with auto-reload
+# Run with auto-reload
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Production mode
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-## Application URLs
+### Production Mode
+```bash
+# Run in production
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
 
-Once running, access these features:
-
-- **Home Page**: http://localhost:8000
-- **AI Chat Assistant**: http://localhost:8000/chat/
+### Access the Application
+- **Main Application**: http://localhost:8000
+- **Chat Assistant**: http://localhost:8000/chat/
 - **Feedback System**: http://localhost:8000/feedback/
 - **Report Concerns**: http://localhost:8000/concern/
 - **Admin Dashboard**: http://localhost:8000/auth/login
 
-## Admin Access
+## Usage Guide
 
-**Login Credentials:**
-- Username: `admin`
-- Password: `admin123`
+### For Citizens
+
+1. **Chat Assistant**
+   - Ask questions about government services
+   - Get instant AI-powered responses
+   - Available 24/7
+
+2. **Provide Feedback**
+   - Share experiences with government services
+   - Automatic sentiment analysis
+   - Help improve services
+
+3. **Report Concerns**
+   - Submit issues and problems
+   - Track concern status
+   - Categorized priority system
+
+### For Administrators
+
+1. **Login Credentials**
+   - Username: `admin`
+   - Password: `admin123`
+
+2. **Dashboard Features**
+   - View total interactions
+   - Monitor sentiment trends
+   - Analyze concern categories
+   - Track recent activity
 
 ## API Endpoints
 
 ### Chat System
-- `POST /chat/ask` - Submit question to AI assistant
-- `GET /chat/history` - Retrieve chat history
+- `POST /chat/ask` - Submit question to AI
+- `GET /chat/history` - Get chat history
 
-### Feedback & Sentiment Analysis
-- `POST /feedback/submit` - Submit feedback for analysis
-- `GET /feedback/analyze?text=` - Analyze text sentiment
+### Feedback System
+- `POST /feedback/submit` - Submit feedback
+- `GET /feedback/analyze` - Analyze sentiment
 
 ### Concern Management
-- `POST /concern/submit` - Report new concern
+- `POST /concern/submit` - Report concern
 - `GET /concern/list` - List all concerns
-- `GET /concern/{id}` - Get specific concern details
+- `GET /concern/{id}` - Get specific concern
 
 ### Authentication
 - `GET /auth/login` - Login page
 - `POST /auth/login` - Process login
-- `GET /auth/logout` - Logout user
+- `GET /auth/logout` - Logout
 
 ### Admin Dashboard
-- `GET /dashboard/admin` - Dashboard interface
-- `GET /dashboard/analytics` - Analytics data API
+- `GET /dashboard/admin` - Dashboard page
+- `GET /dashboard/analytics` - Analytics API
 
-## Configuration
+## AI Model Information
 
-### Environment Variables (Optional)
-```bash
-# Create .env file for production
-echo "ENVIRONMENT=production" > .env
-echo "LOG_LEVEL=info" >> .env
-```
+### IBM Granite 3.3 2B Instruct
+- **Model Size**: 2 billion parameters
+- **Capabilities**: Text generation, conversation, sentiment analysis
+- **Optimization**: Supports quantization for efficient inference
+- **Fallback**: Keyword-based responses when model unavailable
 
-### Model Configuration
-The IBM Granite model will be automatically downloaded on first run:
-- Model: `ibm-granite/granite-3.3-2b-instruct`
-- Size: ~2GB download
-- Requirements: 4GB+ RAM
+### Model Features
+- Government service knowledge
+- Sentiment classification
+- Contextual understanding
+- Multi-turn conversations
 
-## Features Overview
+## Security Features
 
-### 1. Real-Time Chat Assistant
-- Powered by IBM Granite 3.3 2B Instruct model
-- Government service inquiries
-- 24/7 availability
-- Natural language processing
+- Session-based authentication
+- Input validation and sanitization
+- CSRF protection
+- Secure cookie handling
+- Environment-based configuration
 
-**Example Questions:**
-- "How do I apply for a ration card?"
-- "What are the pension schemes available?"
-- "How to get a driving license?"
-- "How to file income tax returns?"
+## Performance Optimizations
 
-### 2. Sentiment Analysis
-- Automatic classification: Positive, Negative, Neutral
-- Real-time feedback processing
-- Government service improvement insights
+- Model quantization for memory efficiency
+- Async request handling
+- Static file serving
+- Efficient template rendering
+- Database connection pooling ready
 
-**Test Examples:**
-- Positive: "The online portal is excellent and user-friendly!"
-- Negative: "The waiting time is terrible and frustrating."
-- Neutral: "The process is okay, could be improved."
+## Deployment Options
 
-### 3. Concern Reporting
-- Issue categorization
-- Priority levels (Low, Medium, High, Critical)
-- Status tracking
-- Automatic sentiment analysis
+### Local Development
+- Run with `uvicorn --reload`
+- Debug mode enabled
+- Hot reloading
 
-**Categories:**
-- Infrastructure
-- Public Services
-- Healthcare
-- Education
-- Transportation
-- Environment
-- Safety & Security
-- Administrative
+### Production Deployment
+- Use production ASGI server
+- Enable security features
+- Set environment variables
+- Configure logging
 
-### 4. Admin Dashboard
-- Real-time statistics
-- Sentiment distribution charts
-- Concern category analysis
-- Recent activity monitoring
-- Interactive data visualization
+### Cloud Deployment
+- Compatible with IBM Cloud
+- Docker containerization ready
+- Scalable architecture
+- Load balancer compatible
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Make changes
+4. Test thoroughly
+5. Submit pull request
 
 ## Troubleshooting
 
-### Common Issues
+### Model Loading Issues
+- Ensure sufficient RAM (4GB+)
+- Check internet connection
+- Verify Hugging Face access
 
-**1. Model Loading Problems**
-```bash
-# Error: Model download failed
-# Solution: Check internet connection and disk space
-```
+### Performance Issues
+- Enable model quantization
+- Reduce max_length parameters
+- Use CPU inference for development
 
-**2. Memory Issues**
-```bash
-# Error: Out of memory
-# Solution: Reduce model parameters or use CPU inference
-```
+### Dependencies
+- Update pip: `pip install --upgrade pip`
+- Install specific versions if conflicts occur
+- Use virtual environment
 
-**3. Port Already in Use**
-```bash
-# Error: Address already in use
-# Solution: Use different port
-uvicorn app.main:app --port 8001
-```
+## Live Demo
+- https://citizen-ai.onrender.com/
+- "Render Free Tier may show a short 502 during startup. This is expected behavior and resolves automatically."
 
-**4. Missing Dependencies**
-```bash
-# Error: Module not found
-# Solution: Install missing packages
-pip install [missing-package]
-```
+## License
 
-### Performance Optimization
-
-**For Low-Resource Systems:**
-1. Use the demo version (`demo_app.py`)
-2. Enable model quantization
-3. Reduce max_length parameters
-4. Use CPU inference
-
-**For Production:**
-1. Use GPU acceleration if available
-2. Enable model caching
-3. Configure proper logging
-4. Set up reverse proxy (nginx)
-
-## Deployment
-
-### Local Development
-```bash
-uvicorn app.main:app --reload
-```
-
-### Production Server
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
-```
-
-### Docker Deployment (Optional)
-```dockerfile
-FROM python:3.11-slim
-COPY . /app
-WORKDIR /app
-RUN pip install -r citizen_ai_requirements.txt
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-### Cloud Deployment
-Compatible with:
-- IBM Cloud
-- AWS
-- Google Cloud Platform
-- Azure
-- Heroku
+MIT License - see LICENSE file for details
 
 ## Support
 
-For technical issues:
-1. Check the troubleshooting section
-2. Verify all dependencies are installed
-3. Ensure sufficient system resources
-4. Review error logs for specific issues
+For technical support or questions:
+- Check troubleshooting section
+- Review error logs
+- Contact development team
 
-New-Item -ItemType Directory -Path "app/routes","app/templates","app/static/css","app/static/js" -Force
-# Install basic dependencies
-pip install fastapi uvicorn jinja2 python-multipart
+---
 
-# Run the demo application
-python demo_app.py
-
-# Create virtual environment
-python -m venv citizen_ai_env
-source citizen_ai_env/bin/activate  # On Windows: citizen_ai_env\Scripts\activate
-
-# Install all dependencies
-pip install -r citizen_ai_requirements.txt
-
-# Create project structure
-mkdir -p app/routes app/templates app/static/css app/static/js
-
-# Run the full application
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-The platform is designed to be robust and handle various deployment scenarios, from local development to cloud production environments.
+**Powered by IBM Granite AI** | **Built with FastAPI & Python**

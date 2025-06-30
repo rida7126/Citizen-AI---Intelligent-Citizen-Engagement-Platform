@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Report Concern - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Report a Concern
+                    </h4>
+                    <small>Submit issues and track their resolution</small>
+                </div>
+                
+                <div class="card-body">
+                    <form id="concernForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="concernTitle" class="form-label">Issue Title *</label>
+                                <input type="text" class="form-control" id="concernTitle" name="title" 
+                                       placeholder="Brief description of the issue" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="concernCategory" class="form-label">Category *</label>
+                                <select class="form-select" id="concernCategory" name="category" required>
+                                    <option value="">Select category</option>
+                                    <option value="Infrastructure">Infrastructure</option>
+                                    <option value="Public Services">Public Services</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Environment">Environment</option>
+                                    <option value="Safety">Safety & Security</option>
+                                    <option value="Administrative">Administrative</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="concernPriority" class="form-label">Priority Level *</label>
+                            <select class="form-select" id="concernPriority" name="priority" required>
+                                <option value="">Select priority</option>
+                                <option value="Low">Low - Minor issue, can wait</option>
+                                <option value="Medium">Medium - Moderate impact</option>
+                                <option value="High">High - Significant impact</option>
+                                <option value="Critical">Critical - Urgent attention required</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="concernDescription" class="form-label">Detailed Description *</label>
+                            <textarea class="form-control" id="concernDescription" name="description" 
+                                    rows="5" placeholder="Provide detailed information about the issue..."
+                                    required></textarea>
+                            <div class="form-text">
+                                Include location, time, and any other relevant details to help us address your concern.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning" id="submitButton">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Submit Concern
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Result Section -->
+                    <div id="resultSection" class="mt-4" style="display: none;">
+                        <div class="alert alert-success" id="resultAlert">
+                            <h5><i class="fas fa-check-circle me-2"></i>Concern Submitted Successfully</h5>
+                            <p id="resultMessage"></p>
+                            <p><strong>Concern ID:</strong> <span id="concernId"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Concerns -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Recent Concerns
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="recentConcerns">
+                        <p class="text-muted">Loading recent concerns...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const concernForm = document.getElementById('concernForm');
+const submitButton = document.getElementById('submitButton');
+const resultSection = document.getElementById('resultSection');
+const resultMessage = document.getElementById('resultMessage');
+const concernId = document.getElementById('concernId');
+const recentConcerns = document.getElementById('recentConcerns');
+
+// Handle form submission
+concernForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(concernForm);
+    
+    // Disable submit button
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+    
+    try {
+        const response = await fetch('/concern/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showResult(data.concern_id, data.message);
+            concernForm.reset();
+            loadRecentConcerns(); // Refresh the list
+        } else {
+            showError('Failed to submit concern. Please try again.');
+        }
+    } catch (error) {
+        showError('An error occurred. Please try again.');
+    } finally {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Concern';
+    }
+});
+
+// Show success result
+function showResult(id, message) {
+    resultMessage.textContent = message;
+    concernId.textContent = `#${id}`;
+    resultSection.style.display = 'block';
+    resultSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Show error message
+function showError(message) {
+    const alertDiv = document.getElementById('resultAlert');
+    alertDiv.className = 'alert alert-danger';
+    alertDiv.innerHTML = `
+        <h5><i class="fas fa-exclamation-circle me-2"></i>Error</h5>
+        <p>${message}</p>
+    `;
+    resultSection.style.display = 'block';
+}
+
+// Load recent concerns
+async function loadRecentConcerns() {
+    try {
+        const response = await fetch('/concern/list');
+        const data = await response.json();
+        
+        if (data.concerns && data.concerns.length > 0) {
+            const concernsHtml = data.concerns.slice(-5).reverse().map(concern => `
+                <div class="card mb-2">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${concern.title}</h6>
+                                <p class="text-muted small mb-2">${concern.description.substring(0, 100)}...</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">${concern.category}</span>
+                                    <span class="badge ${getPriorityBadgeClass(concern.priority)}">${concern.priority}</span>
+                                    <span class="badge ${getSentimentBadgeClass(concern.sentiment)}">${concern.sentiment}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">ID: #${concern.id}</small><br>
+                                <small class="text-muted">${new Date(concern.timestamp).toLocaleDateString()}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            recentConcerns.innerHTML = concernsHtml;
+        } else {
+            recentConcerns.innerHTML = '<p class="text-muted">No concerns submitted yet.</p>';
+        }
+    } catch (error) {
+        recentConcerns.innerHTML = '<p class="text-muted">Unable to load recent concerns.</p>';
+    }
+}
+
+// Helper functions for badge classes
+function getPriorityBadgeClass(priority) {
+    switch (priority) {
+        case 'Critical': return 'bg-danger';
+        case 'High': return 'bg-warning';
+        case 'Medium': return 'bg-info';
+        case 'Low': return 'bg-success';
+        default: return 'bg-secondary';
+    }
+}
+
+function getSentimentBadgeClass(sentiment) {
+    switch (sentiment) {
+        case 'Positive': return 'bg-success';
+        case 'Negative': return 'bg-danger';
+        case 'Neutral': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+
+// Load recent concerns when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadRecentConcerns();
+});
+</script>
+{% endblock %}

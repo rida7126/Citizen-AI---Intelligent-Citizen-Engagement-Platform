@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-white"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+                <div class="d-flex align-items-center">
+                    <span class="me-3 text-white">Welcome, {{ user }}</span>
+                    <a href="/auth/logout" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.total_chats }}</h4>
+                            <p class="mb-0">Total Conversations</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.total_feedback }}</h4>
+                            <p class="mb-0">Feedback Received</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-comment-dots fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.total_concerns }}</h4>
+                            <p class="mb-0">Concerns Reported</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ data.sentiment_stats.get('Positive', 0) }}%</h4>
+                            <p class="mb-0">Positive Sentiment</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-smile fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row g-4">
+        <!-- Left Column: Feedback Section -->
+        <div class="col-lg-6">
+            <!-- Feedback Submission Box -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comment-dots me-2"></i>
+                        Submit Feedback
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="feedbackForm">
+                        <div class="mb-3">
+                            <label for="feedbackText" class="form-label">Your Feedback</label>
+                            <textarea class="form-control" id="feedbackText" name="feedback_text" 
+                                    rows="4" placeholder="Share your experience with government services..."
+                                    required></textarea>
+                            <div class="form-text">
+                                Our AI will analyze the sentiment of your feedback.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success" id="submitButton">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Feedback Result -->
+                    <div id="feedbackResult" class="mt-3" style="display: none;">
+                        <div class="alert" id="feedbackAlert">
+                            <h6><i class="fas fa-chart-line me-2"></i>Analysis Result</h6>
+                            <p id="feedbackMessage"></p>
+                            <span id="sentimentBadge" class="badge"></span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Feedback Examples -->
+                    <div class="mt-3">
+                        <small class="text-muted">Quick examples:</small>
+                        <div class="d-flex flex-wrap gap-1 mt-2">
+                            <button class="btn btn-outline-success btn-sm use-sample" 
+                                    data-text="The service was excellent and very helpful!">
+                                Positive
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm use-sample" 
+                                    data-text="The process is okay but could be improved.">
+                                Neutral
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm use-sample" 
+                                    data-text="The waiting time was terrible and frustrating.">
+                                Negative
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Feedback -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Feedback</h5>
+                </div>
+                <div class="card-body">
+                    {% if data.recent_feedback %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Feedback</th>
+                                        <th>Sentiment</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for feedback in data.recent_feedback %}
+                                    <tr>
+                                        <td>{{ feedback.text[:50] }}...</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if feedback.sentiment == 'Positive' %}bg-success
+                                                {% elif feedback.sentiment == 'Negative' %}bg-danger
+                                                {% else %}bg-warning{% endif %}">
+                                                {{ feedback.sentiment }}
+                                            </span>
+                                        </td>
+                                        <td>{{ feedback.timestamp[:10] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No feedback data available yet. Submit some feedback above!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Concerns and Analytics -->
+        <div class="col-lg-6">
+            <!-- Concern Reporting Box -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Quick Concern Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="concernForm">
+                        <div class="mb-3">
+                            <label for="concernTitle" class="form-label">Issue Title</label>
+                            <input type="text" class="form-control" id="concernTitle" name="title" 
+                                   placeholder="Brief description" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="concernCategory" class="form-label">Category</label>
+                                <select class="form-select" id="concernCategory" name="category" required>
+                                    <option value="">Select</option>
+                                    <option value="Infrastructure">Infrastructure</option>
+                                    <option value="Public Services">Public Services</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="concernPriority" class="form-label">Priority</label>
+                                <select class="form-select" id="concernPriority" name="priority" required>
+                                    <option value="">Select</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 mt-3">
+                            <label for="concernDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="concernDescription" name="description" 
+                                    rows="3" placeholder="Describe the issue..." required></textarea>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning" id="concernSubmitButton">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Submit Concern
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Concern Result -->
+                    <div id="concernResult" class="mt-3" style="display: none;">
+                        <div class="alert alert-success" id="concernAlert">
+                            <h6><i class="fas fa-check-circle me-2"></i>Concern Submitted</h6>
+                            <p id="concernMessage"></p>
+                            <p><strong>ID:</strong> <span id="concernId"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Concerns -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Concerns</h5>
+                </div>
+                <div class="card-body">
+                    {% if data.recent_concerns %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for concern in data.recent_concerns %}
+                                    <tr>
+                                        <td>{{ concern.title[:30] }}...</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if concern.priority == 'Critical' %}bg-danger
+                                                {% elif concern.priority == 'High' %}bg-warning
+                                                {% elif concern.priority == 'Medium' %}bg-info
+                                                {% else %}bg-success{% endif %}">
+                                                {{ concern.priority }}
+                                            </span>
+                                        </td>
+                                        <td>{{ concern.status }}</td>
+                                        <td>{{ concern.timestamp[:10] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No concerns reported yet. Submit one above!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Feedback Form Handler
+const feedbackForm = document.getElementById('feedbackForm');
+const feedbackText = document.getElementById('feedbackText');
+const submitButton = document.getElementById('submitButton');
+const feedbackResult = document.getElementById('feedbackResult');
+const feedbackAlert = document.getElementById('feedbackAlert');
+const feedbackMessage = document.getElementById('feedbackMessage');
+const sentimentBadge = document.getElementById('sentimentBadge');
+const useSampleButtons = document.querySelectorAll('.use-sample');
+
+feedbackForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const feedback = feedbackText.value.trim();
+    if (!feedback) return;
+    
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('feedback_text', feedback);
+        
+        const response = await fetch('/feedback/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showFeedbackResult(data.sentiment, data.message);
+            feedbackText.value = '';
+            setTimeout(() => location.reload(), 2000); // Refresh to show new feedback
+        } else {
+            showFeedbackError(data.error || 'Failed to submit feedback');
+        }
+    } catch (error) {
+        showFeedbackError('Connection error. Please try again.');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Feedback';
+    }
+});
+
+// Concern Form Handler
+const concernForm = document.getElementById('concernForm');
+const concernSubmitButton = document.getElementById('concernSubmitButton');
+const concernResult = document.getElementById('concernResult');
+const concernMessage = document.getElementById('concernMessage');
+const concernId = document.getElementById('concernId');
+
+concernForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(concernForm);
+    
+    concernSubmitButton.disabled = true;
+    concernSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+    
+    try {
+        const response = await fetch('/concern/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showConcernResult(data.concern_id, data.message);
+            concernForm.reset();
+            setTimeout(() => location.reload(), 2000); // Refresh to show new concern
+        } else {
+            showConcernError(data.error || 'Failed to submit concern');
+        }
+    } catch (error) {
+        showConcernError('Connection error. Please try again.');
+    } finally {
+        concernSubmitButton.disabled = false;
+        concernSubmitButton.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Submit Concern';
+    }
+});
+
+// Sample feedback buttons
+useSampleButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        feedbackText.value = button.dataset.text;
+        feedbackText.focus();
+    });
+});
+
+// Helper functions
+function showFeedbackResult(sentiment, message) {
+    feedbackMessage.textContent = message;
+    
+    sentimentBadge.className = 'badge';
+    if (sentiment === 'Positive') {
+        sentimentBadge.classList.add('bg-success');
+        feedbackAlert.className = 'alert alert-success';
+    } else if (sentiment === 'Negative') {
+        sentimentBadge.classList.add('bg-danger');
+        feedbackAlert.className = 'alert alert-danger';
+    } else {
+        sentimentBadge.classList.add('bg-warning');
+        feedbackAlert.className = 'alert alert-warning';
+    }
+    
+    sentimentBadge.textContent = sentiment;
+    feedbackResult.style.display = 'block';
+}
+
+function showFeedbackError(message) {
+    feedbackMessage.textContent = message;
+    feedbackAlert.className = 'alert alert-danger';
+    sentimentBadge.className = 'badge bg-danger';
+    sentimentBadge.textContent = 'Error';
+    feedbackResult.style.display = 'block';
+}
+
+function showConcernResult(id, message) {
+    concernMessage.textContent = message;
+    concernId.textContent = `#${id}`;
+    concernResult.style.display = 'block';
+}
+
+function showConcernError(message) {
+    const alertDiv = document.getElementById('concernAlert');
+    alertDiv.className = 'alert alert-danger';
+    alertDiv.innerHTML = `
+        <h6><i class="fas fa-exclamation-circle me-2"></i>Error</h6>
+        <p>${message}</p>
+    `;
+    concernResult.style.display = 'block';
+}
+</script>
+{% endblock %}

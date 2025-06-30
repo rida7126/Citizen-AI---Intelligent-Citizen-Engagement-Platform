@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Hero Section matching your first image -->
+    <div class="row min-vh-100 align-items-center">
+        <div class="col-lg-6">
+            <div class="hero-content text-white p-5">
+                <h1 class="display-4 fw-bold mb-4">Welcome to CitizenAI</h1>
+                <h2 class="h3 mb-4">Empowering Citizens Through AI</h2>
+                <p class="lead mb-4">
+                    CitizenAI is your intelligent assistant for civic engagement. From accessing services to sharing feedback, 
+                    our AI-powered platform helps citizens and governments communicate better—anytime, anywhere.
+                </p>
+                <div class="mb-4">
+                    <a href="/chat/" class="btn btn-primary btn-lg me-3">
+                        Get Started
+                    </a>
+                </div>
+                <p class="text-light">Join us in building a smarter, more responsive civic environment.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="hero-image position-relative">
+                <!-- AI Brain visualization similar to your image -->
+                <div class="ai-visualization">
+                    <div class="brain-outline">
+                        <div class="neural-network">
+                            <!-- Animated dots and connections -->
+                            <div class="node node-1"></div>
+                            <div class="node node-2"></div>
+                            <div class="node node-3"></div>
+                            <div class="node node-4"></div>
+                            <div class="connection conn-1"></div>
+                            <div class="connection conn-2"></div>
+                            <div class="connection conn-3"></div>
+                        </div>
+                    </div>
+                    <!-- Service message overlay -->
+                    <div class="service-overlay">
+                        <div class="service-line">AI Chatbot</div>
+                        <div class="service-line">Always Under</div>
+                        <div class="service-line">Your Service</div>
+                        <div class="service-icon">🤖</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Menu (similar to your image) -->
+<style>
+.hero-content {
+    z-index: 2;
+    position: relative;
+}
+
+.ai-visualization {
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+}
+
+.brain-outline {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    border: 2px solid #00ffff;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.1);
+}
+
+.neural-network {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.node {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffff;
+    animation: pulse 2s infinite;
+}
+
+.node-1 { top: 20%; left: 30%; }
+.node-2 { top: 40%; left: 70%; }
+.node-3 { top: 60%; left: 20%; }
+.node-4 { top: 80%; left: 60%; }
+
+.connection {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ffff, transparent);
+    animation: flow 3s infinite;
+}
+
+.conn-1 { top: 25%; left: 25%; width: 150px; transform: rotate(45deg); }
+.conn-2 { top: 45%; left: 30%; width: 120px; transform: rotate(-30deg); }
+.conn-3 { top: 65%; left: 35%; width: 100px; transform: rotate(60deg); }
+
+.service-overlay {
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 25px;
+    border-radius: 12px;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    color: #00ffff;
+    text-align: center;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.service-line {
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: slideIn 0.8s forwards;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.service-icon {
+    font-size: 24px;
+    margin-top: 15px;
+    opacity: 0;
+    animation: bounceIn 1s forwards;
+    animation-delay: 2.5s;
+}
+
+.service-line:nth-child(1) { animation-delay: 0.5s; }
+.service-line:nth-child(2) { animation-delay: 1.2s; }
+.service-line:nth-child(3) { animation-delay: 1.9s; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes flow {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(20px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.3);
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.05);
+    }
+    70% { 
+        transform: scale(0.9);
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+}
+
+/* Additional styling for better visual match */
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+    color: white;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+</style>
+{% endblock %}

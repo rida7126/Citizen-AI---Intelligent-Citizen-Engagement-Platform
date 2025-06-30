@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback & Sentiment Analysis - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-comment-dots me-2"></i>
+                        Share Your Feedback
+                    </h4>
+                    <small>Help us improve government services with your valuable input</small>
+                </div>
+                
+                <div class="card-body">
+                    <form id="feedbackForm">
+                        <div class="mb-3">
+                            <label for="feedbackText" class="form-label">Your Feedback</label>
+                            <textarea class="form-control" id="feedbackText" name="feedback_text" 
+                                    rows="5" placeholder="Share your experience with government services..."
+                                    required></textarea>
+                            <div class="form-text">
+                                Our AI will analyze the sentiment of your feedback to help improve services.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success" id="submitButton">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Result Section -->
+                    <div id="resultSection" class="mt-4" style="display: none;">
+                        <div class="alert" id="resultAlert">
+                            <h5><i class="fas fa-chart-line me-2"></i>Sentiment Analysis Result</h5>
+                            <p id="resultMessage"></p>
+                            <div class="sentiment-indicator">
+                                <span id="sentimentBadge" class="badge"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sample Feedback for Testing -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Sample Feedback Examples
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Try these examples to see sentiment analysis in action:</p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="sample-feedback border rounded p-3">
+                                <h6 class="text-success">Positive Example</h6>
+                                <p class="small">"The online portal for tax filing is excellent! Very user-friendly and efficient."</p>
+                                <button class="btn btn-outline-success btn-sm use-sample" 
+                                        data-text="The online portal for tax filing is excellent! Very user-friendly and efficient.">
+                                    Use This Example
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="sample-feedback border rounded p-3">
+                                <h6 class="text-warning">Neutral Example</h6>
+                                <p class="small">"The ration card application process is okay. Could be improved but manageable."</p>
+                                <button class="btn btn-outline-warning btn-sm use-sample" 
+                                        data-text="The ration card application process is okay. Could be improved but manageable.">
+                                    Use This Example
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="sample-feedback border rounded p-3">
+                                <h6 class="text-danger">Negative Example</h6>
+                                <p class="small">"The waiting time at the license office is terrible. Very frustrating experience."</p>
+                                <button class="btn btn-outline-danger btn-sm use-sample" 
+                                        data-text="The waiting time at the license office is terrible. Very frustrating experience.">
+                                    Use This Example
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const feedbackForm = document.getElementById('feedbackForm');
+const feedbackText = document.getElementById('feedbackText');
+const submitButton = document.getElementById('submitButton');
+const resultSection = document.getElementById('resultSection');
+const resultAlert = document.getElementById('resultAlert');
+const resultMessage = document.getElementById('resultMessage');
+const sentimentBadge = document.getElementById('sentimentBadge');
+const useSampleButtons = document.querySelectorAll('.use-sample');
+
+// Handle form submission
+feedbackForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const feedback = feedbackText.value.trim();
+    if (!feedback) return;
+    
+    // Disable submit button
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+    
+    try {
+        // Send feedback to API
+        const formData = new FormData();
+        formData.append('feedback_text', feedback);
+        
+        const response = await fetch('/feedback/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showResult(data.sentiment, data.message);
+            feedbackText.value = '';
+        } else {
+            showError('Failed to analyze feedback. Please try again.');
+        }
+    } catch (error) {
+        showError('An error occurred. Please try again.');
+    } finally {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Feedback';
+    }
+});
+
+// Handle sample feedback buttons
+useSampleButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        feedbackText.value = button.dataset.text;
+        feedbackText.focus();
+    });
+});
+
+// Show analysis result
+function showResult(sentiment, message) {
+    resultMessage.textContent = message;
+    
+    // Set sentiment badge
+    sentimentBadge.className = 'badge';
+    if (sentiment === 'Positive') {
+        sentimentBadge.classList.add('bg-success');
+        resultAlert.className = 'alert alert-success';
+    } else if (sentiment === 'Negative') {
+        sentimentBadge.classList.add('bg-danger');
+        resultAlert.className = 'alert alert-danger';
+    } else {
+        sentimentBadge.classList.add('bg-warning');
+        resultAlert.className = 'alert alert-warning';
+    }
+    
+    sentimentBadge.textContent = sentiment;
+    resultSection.style.display = 'block';
+    
+    // Scroll to result
+    resultSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Show error message
+function showError(message) {
+    resultMessage.textContent = message;
+    resultAlert.className = 'alert alert-danger';
+    sentimentBadge.className = 'badge bg-danger';
+    sentimentBadge.textContent = 'Error';
+    resultSection.style.display = 'block';
+}
+
+// Focus on textarea when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    feedbackText.focus();
+});
+</script>
+{% endblock %}

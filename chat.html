@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}AI Chat Assistant - Citizen AI Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- User info display -->
+            <div class="card mb-3">
+                <div class="card-body bg-success text-white text-center">
+                    <h5><i class="fas fa-user-check me-2"></i>Logged in as: {{ user }}</h5>
+                    <small>You are now connected to the AI Chat Assistant</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>
+                        AI Chat Assistant
+                    </h4>
+                    <small>Powered by IBM Granite AI Model - Secure Session Active</small>
+                </div>
+                
+                <div class="card-body chat-container" id="chatContainer">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <strong>AI Assistant:</strong>
+                                <p>Hello {{ user }}! I'm your AI assistant for government services. How can I help you today?</p>
+                                <small class="text-muted">Just now</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <form id="chatForm" class="d-flex">
+                        <input type="text" id="questionInput" class="form-control me-2" 
+                               placeholder="Ask about government services..." required>
+                        <button type="submit" class="btn btn-primary" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Try asking about: ration cards, pension schemes, licenses, permits, tax filing
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5 class="text-white">Quick Questions</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-light btn-sm quick-question" 
+                                data-question="How do I apply for a ration card?">
+                            Ration Card Application
+                        </button>
+                        <button class="btn btn-outline-light btn-sm quick-question" 
+                                data-question="What are the pension schemes available?">
+                            Pension Schemes
+                        </button>
+                        <button class="btn btn-outline-light btn-sm quick-question" 
+                                data-question="How to get a driving license?">
+                            Driving License
+                        </button>
+                        <button class="btn btn-outline-light btn-sm quick-question" 
+                                data-question="How to file income tax returns?">
+                            Tax Filing
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const chatForm = document.getElementById('chatForm');
+const questionInput = document.getElementById('questionInput');
+const chatMessages = document.getElementById('chatMessages');
+const sendButton = document.getElementById('sendButton');
+const quickQuestions = document.querySelectorAll('.quick-question');
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = questionInput.value.trim();
+    if (!question) return;
+    
+    addMessage('user', question);
+    questionInput.value = '';
+    sendButton.disabled = true;
+    sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    try {
+        const formData = new FormData();
+        formData.append('question', question);
+        
+        const response = await fetch('/chat/ask', {
+            method: 'POST',
+            body: formData
+        });
+        
+        // Check if response is unauthorized
+        if (response.status === 401) {
+            addMessage('system', 'Your session has expired. Please login again.');
+            setTimeout(() => {
+                window.location.href = '/auth/login';
+            }, 2000);
+            return;
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            addMessage('ai', data.response);
+        } else {
+            addMessage('system', data.error || 'Sorry, I encountered an error. Please try again.');
+            if (data.redirect) {
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 2000);
+            }
+        }
+    } catch (error) {
+        addMessage('system', 'Connection error. Please check your internet and try again.');
+        console.error('Chat error:', error);
+    } finally {
+        sendButton.disabled = false;
+        sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+        questionInput.focus();
+    }
+});
+
+quickQuestions.forEach(button => {
+    button.addEventListener('click', () => {
+        questionInput.value = button.dataset.question;
+        chatForm.dispatchEvent(new Event('submit'));
+    });
+});
+
+function addMessage(sender, message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    if (sender === 'user') {
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <strong>You:</strong>
+                <p>${message}</p>
+                <small class="text-muted">${timeString}</small>
+            </div>
+            <div class="message-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        `;
+    } else if (sender === 'system') {
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-exclamation-triangle" style="color: #ff6b6b;"></i>
+            </div>
+            <div class="message-content" style="background: #ff6b6b; color: white;">
+                <strong>System:</strong>
+                <p>${message}</p>
+                <small class="text-muted">${timeString}</small>
+            </div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <strong>AI Assistant:</strong>
+                <p>${message}</p>
+                <small class="text-muted">${timeString}</small>
+            </div>
+        `;
+    }
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    questionInput.focus();
+});
+</script>
+{% endblock %}
