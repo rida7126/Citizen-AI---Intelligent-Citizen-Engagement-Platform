@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}About CitizenAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <div class="col-12">
+            <!-- Header matching your image -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">About CitizenAI</h1>
+                <p class="lead">
+                    <a href="/" class="text-decoration-underline text-white">Back to Home</a>
+                </p>
+            </div>
+            
+            <!-- Content section matching your 2nd image -->
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="about-content">
+                        <p class="lead mb-4">
+                            <strong>CitizenAI:</strong> CitizenAI is a platform designed to improve how governments and citizens interact, 
+                            using artificial intelligence (AI) to make public services smarter, faster, and more accessible.
+                        </p>
+                        
+                        <p class="mb-4">
+                            Our mission is to simplify civic interactions, encourage transparency, and foster trust by providing a smart, 
+                            responsive, and accessible interface for every citizen. Whether you're submitting feedback, accessing government 
+                            services, or exploring insights—CitizenAI is your bridge to a smarter society.
+                        </p>
+                        
+                        <!-- "In Simple Terms" section with icon -->
+                        <div class="simple-terms-section mt-5">
+                            <h2 class="h3 mb-4">
+                                <i class="fas fa-rocket me-3" style="color: #ff6b6b;"></i>
+                                In Simple Terms:
+                            </h2>
+                            
+                            <p class="mb-4">
+                                Think of CitizenAI as a digital assistant for public service—just like a chatbot or an AI helpdesk, 
+                                but for government-related tasks like:
+                            </p>
+                            
+                            <ul class="list-unstyled ms-4">
+                                <li class="mb-2">• Asking questions about public services</li>
+                                <li class="mb-2">• Reporting issues (like potholes, pollution, or delays)</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Key Features section matching your 3rd image -->
+                        <div class="features-section mt-5">
+                            <h2 class="h3 mb-4">
+                                <i class="fas fa-brain me-3" style="color: #ff6b6b;"></i>
+                                Key Features:
+                            </h2>
+                            
+                            <ul class="list-unstyled ms-4">
+                                <li class="mb-3">
+                                    <strong>Chat Assistant:</strong> Lets citizens ask questions and get AI-powered responses.
+                                </li>
+                                <li class="mb-3">
+                                    <strong>Sentiment Analysis:</strong> Understands whether feedback is positive, negative, or neutral.
+                                </li>
+                                <li class="mb-3">
+                                    <strong>Concern Reporting:</strong> Citizens can submit issues, and the system tracks or logs them.
+                                </li>
+                                <li class="mb-3">
+                                    <strong>IBM Granite Models:</strong> Powerful AI models from IBM that understand and generate human-like responses.
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Why It's Useful section -->
+                        <div class="useful-section mt-5">
+                            <h2 class="h3 mb-4">
+                                <i class="fas fa-university me-3" style="color: #ff6b6b;"></i>
+                                Why It's Useful:
+                            </h2>
+                            
+                            <ul class="list-unstyled ms-4">
+                                <li class="mb-3">• Makes government services more transparent, efficient, and citizen-friendly.</li>
+                                <li class="mb-3">• Saves time by automating responses to common queries.</li>
+                                <li class="mb-3">• Improves civic engagement and trust between the government and people.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.about-content {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    line-height: 1.8;
+}
+
+.about-content h2 {
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.about-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.about-content ul li {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.simple-terms-section, .features-section, .useful-section {
+    border-left: 4px solid #ff6b6b;
+    padding-left: 2rem;
+    margin-left: 1rem;
+}
+
+/* Animated background effect */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+    z-index: -1;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+</style>
+{% endblock %}
